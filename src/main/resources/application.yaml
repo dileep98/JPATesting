@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: JPATesting
+  web:
+    error:
+      include-message: always
+      include-binding-errors: always
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+  tomcat:
+    threads:
+      max: 200
+    connection-timeout: 20000
+    max-connections: 2000
+    keep-alive-timeout: 5s
+
+app:
+  error:
+    include-methods: false
