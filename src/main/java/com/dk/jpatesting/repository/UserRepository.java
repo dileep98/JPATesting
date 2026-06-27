@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByLastNameContainingIgnoreCase(String lastName);
 
     @Query("SELECT u FROM User u WHERE u.status = :status ORDER BY u.createdAt DESC")
-    List<User> findAllByStatusorderByCreatedAtDesc(@Param("status") UserStatus status);
+    List<User> findAllByStatusOrderByCreatedAtDesc(@Param("status") UserStatus status);
 
     @Query(value = "SELECT * FROM users WHERE email = :email", nativeQuery = true)
     Optional<User> findByEmailNative(@Param("email") String email);

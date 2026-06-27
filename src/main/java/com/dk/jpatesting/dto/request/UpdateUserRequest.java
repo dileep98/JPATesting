@@ -1,9 +1,7 @@
 package com.dk.jpatesting.dto.request;
 
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -15,25 +13,17 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Request payload to create a new user")
-public class CreateUserRequest {
+public class UpdateUserRequest {
 
-    @Schema(description = "User's first name", example = "John")
-    @NotBlank(message = "First name is required")
     @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
     private String firstName;
 
-    @Schema(description = "User's last name", example = "Doe")
-    @NotBlank(message = "Last name is required")
     @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
     private String lastName;
 
-    @Schema(description = "User's email address", example = "john.doe@email.com")
-    @NotBlank(message = "Email is required")
     @Email(message = "Email must be a valid email address")
     private String email;
 
-    @Schema(description = "User's phone number", example = "(000)-000-0000")
     @Pattern(regexp = "^\\+?[0-9]{7,15}$", message = "Phone must be a valid phone number")
     private String phone;
 }
