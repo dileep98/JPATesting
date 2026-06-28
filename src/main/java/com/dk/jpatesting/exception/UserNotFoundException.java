@@ -1,5 +1,7 @@
 package com.dk.jpatesting.exception;
 
+import lombok.Getter;
+
 public class UserNotFoundException extends RuntimeException {
 
     private final Long userId;
@@ -14,7 +16,8 @@ public class UserNotFoundException extends RuntimeException {
         this.userId = null;
     }
 
-    public Long getUserId() {
+    public Long getUserId(){
         return userId;
     }
+
 }

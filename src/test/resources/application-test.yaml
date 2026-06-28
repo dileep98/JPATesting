@@ -9,6 +9,10 @@ spring:
       ddl-auto: create-drop
     show-sql: false
 
+server:
+  servlet:
+    context-path: /api
+
 app:
   error:
     include-methods: false

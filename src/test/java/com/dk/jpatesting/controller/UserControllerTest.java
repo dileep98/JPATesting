@@ -1,6 +1,7 @@
 package com.dk.jpatesting.controller;
 
 import com.dk.jpatesting.dto.request.CreateUserRequest;
+import com.dk.jpatesting.dto.request.UpdateUserRequest;
 import com.dk.jpatesting.dto.response.UserResponse;
 import com.dk.jpatesting.entity.UserStatus;
 import com.dk.jpatesting.exception.DuplicateEmailException;
@@ -19,8 +20,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -157,6 +160,41 @@ class UserControllerTest {
 
             mockMvc.perform(delete("/users/99"))
                     .andExpect(status().isNotFound());
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /users")
+    class GetAllUsers {
+
+        @Test
+        @DisplayName("should return 200 with all users")
+        void shouldReturnAllUsers() throws Exception {
+            when(userService.getAllUsers()).thenReturn(List.of(userResponse));
+
+            mockMvc.perform(get("/users"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(1));
+        }
+    }
+
+    @Nested
+    @DisplayName("PUT /users/{id}")
+    class UpdateUser {
+
+        @Test
+        @DisplayName("should return 200 when updated")
+        void shouldReturn200WhenUpdated() throws Exception {
+            when(userService.updateUser(eq(1L), any())).thenReturn(userResponse);
+
+            UpdateUserRequest update = UpdateUserRequest.builder()
+                    .firstName("Jane").build();
+
+            mockMvc.perform(put("/users/1")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(update)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.firstName").value("John"));
         }
     }
 }

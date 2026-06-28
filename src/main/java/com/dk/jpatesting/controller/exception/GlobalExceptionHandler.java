@@ -1,13 +1,11 @@
 package com.dk.jpatesting.controller.exception;
 
 import com.dk.jpatesting.exception.DuplicateEmailException;
+import com.dk.jpatesting.exception.OrderNotFoundException;
 import com.dk.jpatesting.exception.UserNotFoundException;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +17,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,20 +24,11 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @ControllerAdvice
-@RequiredArgsConstructor
 public class GlobalExceptionHandler {
-
-    private final Environment env;
 
     @Value("${app.error.include-methods:true}")
     private boolean includeMethodsInError;
 
-    @PostConstruct
-    @Profile("dev")
-    public void init() {
-        log.info("app.error.include-methods = {}", includeMethodsInError);
-        log.info("active profiles = {}", Arrays.toString(env.getActiveProfiles()));
-    }
 
     /**     * Handle 404 - Resource not found (wrong path)     */
     @ExceptionHandler(NoHandlerFoundException.class)
@@ -140,6 +128,47 @@ public class GlobalExceptionHandler {
         body.put("fieldErrors", fieldErrors);
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleOrderNotFound(
+            OrderNotFoundException ex,
+            WebRequest webRequest) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status",  HttpStatus.NOT_FOUND.value());
+        body.put("error", "Order Not Found");
+        body.put("message", ex.getMessage());
+        body.put("orderId", ex.getOrderId());
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalStateException(
+            IllegalStateException ex,
+            WebRequest webRequest) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.CONFLICT.value());
+        body.put("error", "Invalid Operation");
+        body.put("message", ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
+    // Add to GlobalExceptionHandler — handles anything not caught by specific handlers
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleAll(
+            Exception ex, WebRequest request) {
+
+        log.error("Unhandled exception", ex);
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        body.put("error", "Internal Server Error");
+        body.put("message", "An unexpected error occurred");
+
+        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private boolean isDetailedErrorsEnabled() {
