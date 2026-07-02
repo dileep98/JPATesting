@@ -20,3 +20,8 @@ server:
 app:
   error:
     include-methods: false
+  pagination:
+    default-page-size: 10
+    max-page-size: 100
+    default-sort-by: createdAt
+    default-sort-dir: desc

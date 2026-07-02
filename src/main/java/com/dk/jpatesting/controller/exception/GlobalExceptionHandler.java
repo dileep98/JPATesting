@@ -1,5 +1,6 @@
 package com.dk.jpatesting.controller.exception;
 
+import com.dk.jpatesting.config.AppProperties;
 import com.dk.jpatesting.exception.DuplicateEmailException;
 import com.dk.jpatesting.exception.OrderNotFoundException;
 import com.dk.jpatesting.exception.UserNotFoundException;
@@ -24,10 +25,14 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @ControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
 
-    @Value("${app.error.include-methods:true}")
-    private boolean includeMethodsInError;
+    private final AppProperties appProperties;
+
+//    @Value("${app.error.include-methods:true}")
+//    private boolean includeMethodsInError;
+
 
 
     /**     * Handle 404 - Resource not found (wrong path)     */
@@ -172,6 +177,6 @@ public class GlobalExceptionHandler {
     }
 
     private boolean isDetailedErrorsEnabled() {
-        return includeMethodsInError;
+        return appProperties.getError().isIncludeMethods();
     }
 }
