@@ -4,6 +4,7 @@ import com.dk.jpatesting.entity.User;
 import com.dk.jpatesting.entity.UserStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +15,10 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    @EntityGraph(attributePaths = {"orders"})
+    @Query("SELECT DISTINCT u FROM User u")
+    List<User> findAllWithOrdersUsers();
 
     Optional<User> findByEmail(String email);
 

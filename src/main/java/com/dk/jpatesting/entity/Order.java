@@ -9,7 +9,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "orders")   // "order" is a reserved SQL keyword — always use "orders"
+@Table(
+        name = "orders",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "order_number", name = "uk_orders_order_number")
+        }
+)   // "order" is a reserved SQL keyword — always use "orders"
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,7 +26,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "order_number", nullable = false, unique = true, length = 50)
+    @Column(name = "order_number", nullable = false, length = 50)
     private String orderNumber;
 
     @Column(name = "description", length = 255)
